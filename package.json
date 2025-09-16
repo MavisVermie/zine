@@ -1,8 +1,20 @@
 {
   "name": "zinc-hardware",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
+  "description": "A modern, responsive e-commerce website inspired by Newegg, built with React and Tailwind CSS. Zinc Hardware specializes in computer hardware and electronics with a clean, professional design.",
+  "homepage": "https://github.com/MavisVermie/zine#readme",
+  "bugs": {
+    "url": "https://github.com/MavisVermie/zine/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MavisVermie/zine.git"
+  },
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "postcss.config.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
