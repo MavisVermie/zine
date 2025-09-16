@@ -22,7 +22,10 @@ export const ProductProvider = ({ children }) => {
     console.log('Current path:', path);
     
     if (path.startsWith('/CPU-')) {
-      const productId = path.replace('/CPU-', 'CPU-');
+      // Extract the ID part after /CPU-
+      const idPart = path.replace('/CPU-', '');
+      // Construct the full product ID
+      const productId = `CPU-${idPart.padStart(3, '0')}`;
       console.log('Extracted product ID:', productId);
       
       // Find the product in the data
@@ -50,10 +53,17 @@ export const ProductProvider = ({ children }) => {
       const flowId = '30c97938-1c04-4822-998d-e00b368a8833';
       const apiUrl = `https://cloud.flowiseai.com/api/v1/prediction/${flowId}`;
       
-      console.log('Sending to Flowise:', apiUrl);
-      console.log('Message:', message);
+      console.log('=== FLOWISE API CALL DEBUG ===');
+      console.log('API URL:', apiUrl);
+      console.log('User Message:', message);
       console.log('Current Product:', currentProduct);
       console.log('Product ID being sent:', currentProduct?.id);
+      console.log('================================');
+      
+      // Send only the product ID since Flowise already has the database
+      const productContext = {
+        product_id: currentProduct?.id || 'none'
+      };
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -64,9 +74,7 @@ export const ProductProvider = ({ children }) => {
           question: message,
           streaming: false,
           overrideConfig: {
-            vars: {
-              product_id: currentProduct?.id || 'none'
-            }
+            vars: productContext
           }
         })
       });
