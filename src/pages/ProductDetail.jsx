@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { StarIcon, ShoppingCartIcon, HeartIcon, StarOutlineIcon } from '../components/Icons';
 import productsData from '../data/products.json';
+import ChatBot from '../components/ChatBot';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -11,7 +12,8 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const foundProduct = productsData.find(p => p.id === parseInt(id));
+    // Try to find product by string ID first (for new format), then by integer ID
+    const foundProduct = productsData.find(p => p.id === id || p.id === parseInt(id));
     setProduct(foundProduct);
     setLoading(false);
   }, [id]);
@@ -65,7 +67,7 @@ const ProductDetail = () => {
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'JOD'
     }).format(price);
   };
 
@@ -236,6 +238,18 @@ const ProductDetail = () => {
               <p className="text-gray-600 leading-relaxed">
                 {product.description}
               </p>
+              {product.brand && (
+                <div className="mt-4">
+                  <span className="text-sm text-gray-500">Brand: </span>
+                  <span className="text-sm font-medium text-gray-900">{product.brand}</span>
+                </div>
+              )}
+              {product.warranty && (
+                <div className="mt-2">
+                  <span className="text-sm text-gray-500">Warranty: </span>
+                  <span className="text-sm font-medium text-gray-900">{product.warranty}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -298,6 +312,9 @@ const ProductDetail = () => {
             ))}
         </div>
       </div>
+      
+      {/* Chat Bot */}
+      <ChatBot />
     </div>
   );
 };

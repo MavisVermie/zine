@@ -6,6 +6,7 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Search from './pages/Search';
+import ChatBot from './components/ChatBot';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/search" element={<Search />} />
           </Routes>
         </main>
+        <ChatBot />
       </div>
     </Router>
   );
