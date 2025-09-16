@@ -55,8 +55,16 @@ const ProductCard = ({ product }) => {
     }).format(price);
   };
 
+  const getProductLink = (productId) => {
+    if (productId.startsWith('CPU-')) {
+      const id = productId.replace('CPU-', '');
+      return `/CPU-${id}`;
+    }
+    return `/product/${productId}`;
+  };
+
   return (
-    <Link to={`/product/${product.id}`} className="block">
+    <Link to={getProductLink(product.id)} className="block">
       <div className="card p-4 h-full hover:shadow-lg transition-all duration-200 group">
         {/* Product Image */}
         <div className="relative mb-4 overflow-hidden rounded-lg bg-gray-100">

@@ -11,7 +11,9 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const foundProduct = productsData.find(p => p.id === parseInt(id));
+    // Handle both /CPU-001 and /CPU-1 formats
+    const productId = id.startsWith('CPU-') ? id : `CPU-${id.padStart(3, '0')}`;
+    const foundProduct = productsData.find(p => p.id === productId);
     setProduct(foundProduct);
     setLoading(false);
   }, [id]);
@@ -270,7 +272,7 @@ const ProductDetail = () => {
             .slice(0, 4)
             .map((relatedProduct) => (
               <div key={relatedProduct.id} className="card p-4">
-                <Link to={`/product/${relatedProduct.id}`}>
+                <Link to={relatedProduct.id.startsWith('CPU-') ? `/CPU-${relatedProduct.id.replace('CPU-', '')}` : `/product/${relatedProduct.id}`}>
                   <img
                     src={relatedProduct.image}
                     alt={relatedProduct.name}
