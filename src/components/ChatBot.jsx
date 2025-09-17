@@ -12,6 +12,7 @@ const ChatBot = ({ productId, productName, productCategory }) => {
   const [purchaseData, setPurchaseData] = useState(null);
   const [showPurchaseForm, setShowPurchaseForm] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
+  const [fullScreenTable, setFullScreenTable] = useState(null);
   const messagesEndRef = useRef(null);
   const location = useLocation();
 
@@ -107,6 +108,16 @@ const ChatBot = ({ productId, productName, productCategory }) => {
     });
   };
 
+  // Open full-screen table
+  const openFullScreenTable = (tableData) => {
+    setFullScreenTable(tableData);
+  };
+
+  // Close full-screen table
+  const closeFullScreenTable = () => {
+    setFullScreenTable(null);
+  };
+
   // Function to render message content with proper table formatting
   const renderMessageContent = (content) => {
     // Handle undefined or null content
@@ -150,28 +161,48 @@ const ChatBot = ({ productId, productName, productCategory }) => {
       const tableLines = lines.filter(line => line.includes('|'));
       
       if (tableLines.length > 0) {
+        const tableId = `table-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
         return (
-          <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse border border-gray-300 text-sm">
-              <tbody>
-                {tableLines.map((line, index) => {
-                  // Skip separator lines (lines with only |, -, and spaces)
-                  if (line.match(/^[\s\|\-]+$/)) return null;
-                  
-                  const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell);
-                  
-                  return (
-                    <tr key={index} className={index === 0 ? 'bg-gray-50 font-semibold' : 'hover:bg-gray-50'}>
-                      {cells.map((cell, cellIndex) => (
-                        <td key={cellIndex} className="border border-gray-300 px-3 py-2 text-left">
-                          {cell}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="space-y-2">
+            <div className="overflow-x-auto relative">
+              <table className="min-w-full border-collapse border border-gray-300 text-xs sm:text-sm">
+                <tbody>
+                  {tableLines.map((line, index) => {
+                    // Skip separator lines (lines with only |, -, and spaces)
+                    if (line.match(/^[\s\|\-]+$/)) return null;
+                    
+                    const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell);
+                    
+                    return (
+                      <tr key={index} className={index === 0 ? 'bg-gray-50 font-semibold' : 'hover:bg-gray-50'}>
+                        {cells.map((cell, cellIndex) => (
+                          <td key={cellIndex} className="border border-gray-300 px-2 sm:px-3 py-1 sm:py-2 text-left">
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              {/* Scroll indicator for wide tables */}
+              <div className="absolute bottom-2 right-2 bg-purple-100 text-purple-600 text-xs px-2 py-1 rounded-full opacity-75">
+                ← Scroll →
+              </div>
+            </div>
+            
+            <div className="flex justify-center">
+              <button
+                onClick={() => openFullScreenTable({ id: tableId, lines: tableLines })}
+                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors duration-200 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg border border-blue-200"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+                <span>View Full Table</span>
+              </button>
+            </div>
           </div>
         );
       }
@@ -346,7 +377,7 @@ const ChatBot = ({ productId, productName, productCategory }) => {
       <div className="fixed bottom-4 right-4 z-50">
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-full p-4 shadow-xl transition-all duration-300 flex items-center space-x-2 transform hover:scale-105"
+          className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-full p-3 sm:p-4 shadow-xl transition-all duration-300 flex items-center space-x-2 transform hover:scale-105"
         >
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 6.5V7.5C15 8.3 14.3 9 13.5 9H10.5C9.7 9 9 8.3 9 7.5V6.5L3 7V9L9 8.5V9.5C9 10.3 9.7 11 10.5 11H13.5C14.3 11 15 10.3 15 9.5V8.5L21 9ZM6.5 12C5.7 12 5 12.7 5 13.5V16.5C5 17.3 5.7 18 6.5 18H7.5V20H9V18H15V20H16.5V18H17.5C18.3 18 19 17.3 19 16.5V13.5C19 12.7 18.3 12 17.5 12H6.5ZM7 14H17V16H7V14Z"/>
@@ -358,9 +389,9 @@ const ChatBot = ({ productId, productName, productCategory }) => {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-96 sm:w-[28rem] bg-white rounded-2xl shadow-2xl border border-purple-200 flex flex-col h-[32rem] overflow-hidden">
+    <div className="fixed bottom-2 right-2 sm:bottom-4 sm:right-4 z-50 w-80 sm:w-96 md:w-[28rem] lg:w-[32rem] bg-white rounded-2xl shadow-2xl border border-purple-200 flex flex-col max-h-[85vh] min-h-[20rem] sm:min-h-[24rem] overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 rounded-t-2xl flex items-center justify-between">
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-3 sm:p-4 rounded-t-2xl flex items-center justify-between flex-shrink-0">
         <div className="flex items-center space-x-2">
           <div className="w-6 h-6 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -565,8 +596,66 @@ const ChatBot = ({ productId, productName, productCategory }) => {
         </div>
       )}
 
+      {/* Full-Screen Table Modal */}
+      {fullScreenTable && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-xl font-semibold text-gray-900">Table View</h3>
+              <button
+                onClick={closeFullScreenTable}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-auto p-6">
+              <div className="overflow-x-auto">
+                <table className="min-w-full border-collapse border border-gray-300 text-sm">
+                  <tbody>
+                    {fullScreenTable.lines.map((line, index) => {
+                      // Skip separator lines (lines with only |, -, and spaces)
+                      if (line.match(/^[\s\|\-]+$/)) return null;
+                      
+                      const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell);
+                      
+                      return (
+                        <tr key={index} className={index === 0 ? 'bg-gray-50 font-semibold' : 'hover:bg-gray-50'}>
+                          {cells.map((cell, cellIndex) => (
+                            <td key={cellIndex} className="border border-gray-300 px-4 py-3 text-left">
+                              {cell}
+                            </td>
+                          ))}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">
+                  {fullScreenTable.lines.length} rows • Click and drag to scroll horizontally
+                </span>
+                <button
+                  onClick={closeFullScreenTable}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-purple-50 to-indigo-50">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gradient-to-b from-purple-50 to-indigo-50 min-h-0">
         {messages.length === 0 ? (
           <div className="text-center text-gray-600 py-8">
             <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
@@ -593,7 +682,7 @@ const ChatBot = ({ productId, productName, productCategory }) => {
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-sm px-4 py-3 rounded-2xl text-sm shadow-sm ${
+                  className={`max-w-xs sm:max-w-sm md:max-w-md px-4 py-3 rounded-2xl text-sm shadow-sm break-words ${
                     message.type === 'user'
                       ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white'
                       : 'bg-white text-gray-800 border border-purple-100'
@@ -643,20 +732,20 @@ const ChatBot = ({ productId, productName, productCategory }) => {
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSendMessage} className="p-4 border-t border-purple-200 bg-white">
+      <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-purple-200 bg-white flex-shrink-0">
         <div className="flex space-x-2">
           <input
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder="Ask about our products..."
-            className="flex-1 border border-purple-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+            className="flex-1 border border-purple-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={!inputMessage.trim() || isLoading}
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-300 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 transform hover:scale-105 disabled:transform-none"
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-300 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 transform hover:scale-105 disabled:transform-none flex-shrink-0"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
