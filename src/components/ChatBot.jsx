@@ -146,7 +146,8 @@ const ChatBot = ({ productId, productName, productCategory }) => {
           <div className="mt-4">
             <button
               onClick={handleShowPurchaseForm}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
+              className="bg-gradient-to-r from-gray-800 to-red-600 hover:from-gray-700 hover:to-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
+              style={{fontFamily: 'Ubuntu, sans-serif'}}
             >
               Show Payment Form
             </button>
@@ -187,7 +188,7 @@ const ChatBot = ({ productId, productName, productCategory }) => {
                 </tbody>
               </table>
               {/* Scroll indicator for wide tables */}
-              <div className="absolute bottom-2 right-2 bg-purple-100 text-purple-600 text-xs px-2 py-1 rounded-full opacity-75">
+              <div className="absolute bottom-2 right-2 bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full opacity-75">
                 ← Scroll →
               </div>
             </div>
@@ -195,7 +196,8 @@ const ChatBot = ({ productId, productName, productCategory }) => {
             <div className="flex justify-center">
               <button
                 onClick={() => openFullScreenTable({ id: tableId, lines: tableLines })}
-                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors duration-200 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg border border-blue-200"
+                className="flex items-center space-x-2 text-red-600 hover:text-red-700 text-sm font-medium transition-colors duration-200 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg border border-red-200"
+                style={{fontFamily: 'Ubuntu, sans-serif'}}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
@@ -372,12 +374,76 @@ const ChatBot = ({ productId, productName, productCategory }) => {
     window.location.href = `/order-confirmation/${orderId}`;
   };
 
+  // Format card number with spaces
+  const formatCardNumber = (value) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = matches && matches[0] || '';
+    const parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    if (parts.length) {
+      return parts.join(' ');
+    } else {
+      return v;
+    }
+  };
+
+  // Format expiry date
+  const formatExpiryDate = (value) => {
+    const v = value.replace(/\D/g, '');
+    if (v.length >= 2) {
+      return v.substring(0, 2) + '/' + v.substring(2, 4);
+    }
+    return v;
+  };
+
+  // Handle input changes for formatting
+  const handleCardNumberChange = (e) => {
+    const formatted = formatCardNumber(e.target.value);
+    e.target.value = formatted;
+  };
+
+  const handleExpiryDateChange = (e) => {
+    const formatted = formatExpiryDate(e.target.value);
+    e.target.value = formatted;
+  };
+
+  // Fill form with saved data
+  const fillSavedData = () => {
+    const cardNumberInput = document.getElementById('cardNumber');
+    const expiryDateInput = document.getElementById('expiryDate');
+    const cvvInput = document.getElementById('cvv');
+    const cardholderNameInput = document.getElementById('cardholderName');
+    const emailInput = document.getElementById('email');
+
+    if (cardNumberInput) {
+      cardNumberInput.value = '4258 9674 5748 9624'; // Your credit card number
+      cardNumberInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    if (expiryDateInput) {
+      expiryDateInput.value = '12/25'; // Future expiry date
+      expiryDateInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    if (cvvInput) {
+      cvvInput.value = '281'; // Your CVV
+    }
+    if (cardholderNameInput) {
+      cardholderNameInput.value = 'Marah Yousef';
+    }
+    if (emailInput) {
+      emailInput.value = 'marah@gmail.com';
+    }
+  };
+
   if (!isOpen) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-full p-3 sm:p-4 shadow-xl transition-all duration-300 flex items-center space-x-2 transform hover:scale-105"
+          className="bg-gradient-to-r from-gray-800 to-red-600 hover:from-gray-700 hover:to-red-700 text-white rounded-full p-3 sm:p-4 shadow-xl transition-all duration-300 flex items-center space-x-2 transform hover:scale-105"
+          style={{fontFamily: 'Ubuntu, sans-serif'}}
         >
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 6.5V7.5C15 8.3 14.3 9 13.5 9H10.5C9.7 9 9 8.3 9 7.5V6.5L3 7V9L9 8.5V9.5C9 10.3 9.7 11 10.5 11H13.5C14.3 11 15 10.3 15 9.5V8.5L21 9ZM6.5 12C5.7 12 5 12.7 5 13.5V16.5C5 17.3 5.7 18 6.5 18H7.5V20H9V18H15V20H16.5V18H17.5C18.3 18 19 17.3 19 16.5V13.5C19 12.7 18.3 12 17.5 12H6.5ZM7 14H17V16H7V14Z"/>
@@ -389,21 +455,21 @@ const ChatBot = ({ productId, productName, productCategory }) => {
   }
 
   return (
-    <div className="fixed bottom-2 right-2 sm:bottom-4 sm:right-4 z-50 w-80 sm:w-96 md:w-[28rem] lg:w-[32rem] bg-white rounded-2xl shadow-2xl border border-purple-200 flex flex-col max-h-[85vh] min-h-[20rem] sm:min-h-[24rem] overflow-hidden">
+    <div className="fixed bottom-2 right-2 sm:bottom-4 sm:right-4 z-50 w-80 sm:w-96 md:w-[28rem] lg:w-[32rem] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col max-h-[85vh] min-h-[20rem] sm:min-h-[24rem] overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-3 sm:p-4 rounded-t-2xl flex items-center justify-between flex-shrink-0">
+      <div className="bg-gradient-to-r from-gray-800 to-red-600 text-white p-3 sm:p-4 rounded-t-2xl flex items-center justify-between flex-shrink-0">
         <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full flex items-center justify-center">
+          <div className="w-6 h-6 bg-gradient-to-r from-red-400 to-red-500 rounded-full flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 6.5V7.5C15 8.3 14.3 9 13.5 9H10.5C9.7 9 9 8.3 9 7.5V6.5L3 7V9L9 8.5V9.5C9 10.3 9.7 11 10.5 11H13.5C14.3 11 15 10.3 15 9.5V8.5L21 9ZM6.5 12C5.7 12 5 12.7 5 13.5V16.5C5 17.3 5.7 18 6.5 18H7.5V20H9V18H15V20H16.5V18H17.5C18.3 18 19 17.3 19 16.5V13.5C19 12.7 18.3 12 17.5 12H6.5ZM7 14H17V16H7V14Z"/>
             </svg>
           </div>
-          <span className="font-semibold">TechBuddy</span>
+          <span className="font-semibold" style={{fontFamily: 'Ubuntu, sans-serif'}}>TechBuddy</span>
         </div>
         <div className="flex items-center space-x-2">
           <button
             onClick={clearChat}
-            className="text-white hover:text-purple-200 transition-colors p-1 rounded hover:bg-white/20"
+            className="text-white hover:text-red-200 transition-colors p-1 rounded hover:bg-white/20"
             title="Clear chat"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -412,7 +478,7 @@ const ChatBot = ({ productId, productName, productCategory }) => {
           </button>
           <button
             onClick={() => setIsOpen(false)}
-            className="text-white hover:text-purple-200 transition-colors p-1 rounded hover:bg-white/20"
+            className="text-white hover:text-red-200 transition-colors p-1 rounded hover:bg-white/20"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -491,78 +557,129 @@ const ChatBot = ({ productId, productName, productCategory }) => {
               </div>
 
               {/* Payment Form */}
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                
-                // Validate price is entered
-                if (currentProduct?.price <= 0) {
-                  alert('Please enter a valid product price before proceeding with payment.');
-                  return;
-                }
-                
-                const formData = new FormData(e.target);
-                handlePurchaseFormSubmit({
-                  cardNumber: formData.get('cardNumber'),
-                  expiryDate: formData.get('expiryDate'),
-                  cvv: formData.get('cvv'),
-                  cardholderName: formData.get('cardholderName'),
-                  email: formData.get('email'),
-                  cardType: formData.get('cardNumber')?.startsWith('4') ? 'Visa' : 'Mastercard'
-                });
-              }}>
+              <form 
+                autoComplete="on"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  
+                  // Validate price is entered
+                  if (currentProduct?.price <= 0) {
+                    alert('Please enter a valid product price before proceeding with payment.');
+                    return;
+                  }
+                  
+                  const formData = new FormData(e.target);
+                  handlePurchaseFormSubmit({
+                    cardNumber: formData.get('cardNumber'),
+                    expiryDate: formData.get('expiryDate'),
+                    cvv: formData.get('cvv'),
+                    cardholderName: formData.get('cardholderName'),
+                    email: formData.get('email'),
+                    cardType: formData.get('cardNumber')?.startsWith('4') ? 'Visa' : 'Mastercard'
+                  });
+                }}
+              >
+                {/* Quick Fill Button */}
+                <div className="mb-4 p-3 bg-gradient-to-r from-red-50 to-gray-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-800 font-medium" style={{fontFamily: 'Ubuntu, sans-serif'}}>
+                        💳 Your Saved Payment Info
+                      </p>
+                      <p className="text-xs text-gray-600" style={{fontFamily: 'Ubuntu, sans-serif'}}>
+                        Quickly fill your saved payment details
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={fillSavedData}
+                      className="bg-gradient-to-r from-gray-800 to-red-600 hover:from-gray-700 hover:to-red-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-all duration-200 transform hover:scale-105"
+                      style={{fontFamily: 'Ubuntu, sans-serif'}}
+                    >
+                      FILL YOUR SAVED INFO
+                    </button>
+                  </div>
+                </div>
+
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                    <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1" style={{fontFamily: 'Ubuntu, sans-serif'}}>Card Number</label>
                     <input
+                      id="cardNumber"
                       type="text"
                       name="cardNumber"
                       placeholder="1234 5678 9012 3456"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      autoComplete="cc-number"
+                      inputMode="numeric"
+                      pattern="[0-9\s]{13,19}"
+                      maxLength="19"
+                      onChange={handleCardNumberChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-600"
+                      style={{fontFamily: 'Ubuntu, sans-serif'}}
                       required
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                      <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700 mb-1" style={{fontFamily: 'Ubuntu, sans-serif'}}>Expiry Date</label>
                       <input
+                        id="expiryDate"
                         type="text"
                         name="expiryDate"
                         placeholder="MM/YY"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        autoComplete="cc-exp"
+                        inputMode="numeric"
+                        pattern="(0[1-9]|1[0-2])\/([0-9]{2})"
+                        maxLength="5"
+                        onChange={handleExpiryDateChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-600"
+                        style={{fontFamily: 'Ubuntu, sans-serif'}}
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                      <label htmlFor="cvv" className="block text-sm font-medium text-gray-700 mb-1" style={{fontFamily: 'Ubuntu, sans-serif'}}>CVV</label>
                       <input
+                        id="cvv"
                         type="text"
                         name="cvv"
                         placeholder="123"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        autoComplete="cc-csc"
+                        inputMode="numeric"
+                        pattern="[0-9]{3,4}"
+                        maxLength="4"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-600"
+                        style={{fontFamily: 'Ubuntu, sans-serif'}}
                         required
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+                    <label htmlFor="cardholderName" className="block text-sm font-medium text-gray-700 mb-1" style={{fontFamily: 'Ubuntu, sans-serif'}}>Cardholder Name</label>
                     <input
+                      id="cardholderName"
                       type="text"
                       name="cardholderName"
                       placeholder="John Doe"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      autoComplete="cc-name"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-600"
+                      style={{fontFamily: 'Ubuntu, sans-serif'}}
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1" style={{fontFamily: 'Ubuntu, sans-serif'}}>Email Address</label>
                     <input
+                      id="email"
                       type="email"
                       name="email"
                       placeholder="john@example.com"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      autoComplete="email"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-600"
+                      style={{fontFamily: 'Ubuntu, sans-serif'}}
                       required
                     />
                   </div>
@@ -572,11 +689,12 @@ const ChatBot = ({ productId, productName, productCategory }) => {
                   <button
                     type="submit"
                     disabled={currentProduct?.price <= 0}
-                    className={`w-full py-3 px-4 rounded-md font-semibold transition-all duration-200 ${
+                    className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
                       currentProduct?.price > 0
-                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white'
+                        ? 'bg-gradient-to-r from-gray-800 to-red-600 hover:from-gray-700 hover:to-red-700 text-white'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
+                    style={{fontFamily: 'Ubuntu, sans-serif'}}
                   >
                     {currentProduct?.price > 0 
                       ? `Complete Purchase - ${currentProduct?.price?.toFixed(2)} JOD`
@@ -644,7 +762,8 @@ const ChatBot = ({ productId, productName, productCategory }) => {
                 </span>
                 <button
                   onClick={closeFullScreenTable}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+                  className="bg-gradient-to-r from-gray-800 to-red-600 hover:from-gray-700 hover:to-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+                  style={{fontFamily: 'Ubuntu, sans-serif'}}
                 >
                   Close
                 </button>
@@ -655,15 +774,15 @@ const ChatBot = ({ productId, productName, productCategory }) => {
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gradient-to-b from-purple-50 to-indigo-50 min-h-0">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gradient-to-b from-gray-50 to-red-50 min-h-0">
         {messages.length === 0 ? (
           <div className="text-center text-gray-600 py-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-gray-800 to-red-600 rounded-full flex items-center justify-center">
               <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 6.5V7.5C15 8.3 14.3 9 13.5 9H10.5C9.7 9 9 8.3 9 7.5V6.5L3 7V9L9 8.5V9.5C9 10.3 9.7 11 10.5 11H13.5C14.3 11 15 10.3 15 9.5V8.5L21 9ZM6.5 12C5.7 12 5 12.7 5 13.5V16.5C5 17.3 5.7 18 6.5 18H7.5V20H9V18H15V20H16.5V18H17.5C18.3 18 19 17.3 19 16.5V13.5C19 12.7 18.3 12 17.5 12H6.5ZM7 14H17V16H7V14Z"/>
               </svg>
             </div>
-            <p className="text-sm font-medium">Hi! I'm TechBuddy, your AI assistant!</p>
+            <p className="text-sm font-medium" style={{fontFamily: 'Ubuntu, sans-serif'}}>Hi! I'm TechBuddy, your AI assistant!</p>
             <p className="text-xs text-gray-500 mt-1">I can help with product specifications, compatibility, and recommendations</p>
             {!flowiseApi.isConfigured() && (
               <p className="text-xs text-red-500 mt-2">⚠️ API not configured</p>
@@ -684,14 +803,15 @@ const ChatBot = ({ productId, productName, productCategory }) => {
                 <div
                   className={`max-w-xs sm:max-w-sm md:max-w-md px-4 py-3 rounded-2xl text-sm shadow-sm break-words ${
                     message.type === 'user'
-                      ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white'
-                      : 'bg-white text-gray-800 border border-purple-100'
+                      ? 'bg-gradient-to-r from-gray-800 to-red-600 text-white'
+                      : 'bg-white text-gray-800 border border-gray-200'
                   }`}
+                  style={{fontFamily: 'Ubuntu, sans-serif'}}
                 >
                   <div className="space-y-2">
                     {renderMessageContent(message.message || '')}
                     <p className={`text-xs mt-2 ${
-                      message.type === 'user' ? 'text-purple-100' : 'text-gray-500'
+                      message.type === 'user' ? 'text-gray-300' : 'text-gray-500'
                     }`}>
                       {message.timestamp ? formatTime(message.timestamp) : 'Just now'}
                     </p>
@@ -704,14 +824,14 @@ const ChatBot = ({ productId, productName, productCategory }) => {
         
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-white text-gray-800 px-4 py-3 rounded-2xl text-sm shadow-sm border border-purple-100">
+            <div className="bg-white text-gray-800 px-4 py-3 rounded-2xl text-sm shadow-sm border border-gray-200">
               <div className="flex items-center space-x-2">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-gray-800 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-red-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-gray-800 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                 </div>
-                <span className="text-gray-600">AI is thinking...</span>
+                <span className="text-gray-600" style={{fontFamily: 'Ubuntu, sans-serif'}}>AI is thinking...</span>
               </div>
             </div>
           </div>
@@ -720,10 +840,10 @@ const ChatBot = ({ productId, productName, productCategory }) => {
         {error && (
           <div className="bg-red-50 text-red-800 px-4 py-3 rounded-2xl text-sm border border-red-200">
             <div className="flex items-center space-x-2">
-              <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>{error}</span>
+              <span style={{fontFamily: 'Ubuntu, sans-serif'}}>{error}</span>
             </div>
           </div>
         )}
@@ -732,20 +852,22 @@ const ChatBot = ({ productId, productName, productCategory }) => {
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-purple-200 bg-white flex-shrink-0">
+      <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-gray-200 bg-white flex-shrink-0">
         <div className="flex space-x-2">
           <input
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder="Ask about our products..."
-            className="flex-1 border border-purple-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+            className="flex-1 border border-gray-300 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all duration-200"
+            style={{fontFamily: 'Ubuntu, sans-serif'}}
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={!inputMessage.trim() || isLoading}
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-300 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 transform hover:scale-105 disabled:transform-none flex-shrink-0"
+            className="bg-gradient-to-r from-gray-800 to-red-600 hover:from-gray-700 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-300 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 transform hover:scale-105 disabled:transform-none flex-shrink-0"
+            style={{fontFamily: 'Ubuntu, sans-serif'}}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

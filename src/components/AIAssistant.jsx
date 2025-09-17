@@ -98,15 +98,15 @@ const AIAssistant = () => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-[600px] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-gray-800 to-red-600 text-white rounded-t-lg">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue to-fuchsia rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">AI</span>
+            <div className="w-8 h-8 bg-gradient-to-r from-red-400 to-red-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-sm" style={{fontFamily: 'Ubuntu, sans-serif'}}>AI</span>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">AI Assistant</h3>
+              <h3 className="font-semibold text-white" style={{fontFamily: 'Ubuntu, sans-serif'}}>AI Assistant</h3>
               {currentProduct && (
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-300">
                   Helping with: {currentProduct.name}
                 </p>
               )}
@@ -114,7 +114,7 @@ const AIAssistant = () => {
           </div>
           <button
             onClick={closeAIAssistant}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-white hover:text-red-200 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -123,16 +123,17 @@ const AIAssistant = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-gray-50 to-red-50">
           {messages.length === 1 && currentProduct && (
             <div className="space-y-2">
-              <p className="text-sm text-gray-600">Quick questions:</p>
+              <p className="text-sm text-gray-600" style={{fontFamily: 'Ubuntu, sans-serif'}}>Quick questions:</p>
               <div className="flex flex-wrap gap-2">
                 {quickQuestions.map((question, index) => (
                   <button
                     key={index}
                     onClick={() => setInputMessage(question)}
-                    className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors"
+                    className="text-xs bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-700 px-3 py-1 rounded-full transition-colors"
+                    style={{fontFamily: 'Ubuntu, sans-serif'}}
                   >
                     {question}
                   </button>
@@ -149,13 +150,14 @@ const AIAssistant = () => {
               <div
                 className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                   message.type === 'user'
-                    ? 'bg-blue text-white'
-                    : 'bg-gray-100 text-gray-900'
+                    ? 'bg-gradient-to-r from-gray-800 to-red-600 text-white'
+                    : 'bg-white text-gray-900 border border-gray-200'
                 }`}
+                style={{fontFamily: 'Ubuntu, sans-serif'}}
               >
                 <p className="text-sm">{message.content}</p>
                 <p className={`text-xs mt-1 ${
-                  message.type === 'user' ? 'text-blue-100' : 'text-gray-500'
+                  message.type === 'user' ? 'text-gray-300' : 'text-gray-500'
                 }`}>
                   {formatTime(message.timestamp)}
                 </p>
@@ -165,10 +167,10 @@ const AIAssistant = () => {
           
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg">
+              <div className="bg-white text-gray-900 px-4 py-2 rounded-lg border border-gray-200">
                 <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
-                  <span className="text-sm">Thinking...</span>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-800"></div>
+                  <span className="text-sm" style={{fontFamily: 'Ubuntu, sans-serif'}}>Thinking...</span>
                 </div>
               </div>
             </div>
@@ -178,20 +180,22 @@ const AIAssistant = () => {
         </div>
 
         {/* Input */}
-        <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200">
+        <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 bg-white">
           <div className="flex space-x-2">
             <input
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder="Ask me anything about this product..."
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue focus:border-transparent"
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+              style={{fontFamily: 'Ubuntu, sans-serif'}}
               disabled={isLoading}
             />
             <button
               type="submit"
               disabled={!inputMessage.trim() || isLoading}
-              className="bg-blue text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              className="bg-gradient-to-r from-gray-800 to-red-600 hover:from-gray-700 hover:to-red-700 text-white px-4 py-2 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              style={{fontFamily: 'Ubuntu, sans-serif'}}
             >
               Send
             </button>
