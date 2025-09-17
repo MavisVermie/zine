@@ -6,6 +6,7 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Search from './pages/Search';
+import OrderConfirmation from './pages/OrderConfirmation';
 import ChatBot from './components/ChatBot';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
           </Routes>
         </main>
       </div>

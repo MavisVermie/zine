@@ -9,5 +9,42 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Purchase Form Handler Script -->
+    <script>
+      // Global function to handle payment form submission
+      window.handlePaymentSubmission = function(event, orderId) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const paymentData = {
+          orderId: orderId,
+          cardNumber: formData.get('cardNumber'),
+          expiryDate: formData.get('expiryDate'),
+          cvv: formData.get('cvv'),
+          cardholderName: formData.get('cardholderName'),
+          email: formData.get('email'),
+          cardType: getCardType(formData.get('cardNumber'))
+        };
+
+        // Send payment data to Flowise
+        sendPaymentToFlowise(paymentData);
+      };
+
+      function getCardType(cardNumber) {
+        const number = cardNumber.replace(/\s/g, '');
+        if (number.startsWith('4')) return 'Visa';
+        if (number.startsWith('5') || number.startsWith('2')) return 'Mastercard';
+        if (number.startsWith('3')) return 'American Express';
+        return 'Unknown';
+      }
+
+      function sendPaymentToFlowise(paymentData) {
+        // This will be handled by the PurchaseHandler component
+        if (window.flowisePurchaseCallback) {
+          window.flowisePurchaseCallback(paymentData);
+        }
+      }
+    </script>
   </body>
 </html>

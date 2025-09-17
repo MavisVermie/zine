@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import flowiseApi from '../services/flowiseApi';
+import PurchaseHandler from './PurchaseHandler';
 
 const ChatBot = ({ productId, productName, productCategory }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,6 +9,9 @@ const ChatBot = ({ productId, productName, productCategory }) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [purchaseData, setPurchaseData] = useState(null);
+  const [showPurchaseForm, setShowPurchaseForm] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState(null);
   const messagesEndRef = useRef(null);
   const location = useLocation();
 
@@ -110,6 +114,36 @@ const ChatBot = ({ productId, productName, productCategory }) => {
       return <p className="text-gray-500 italic">No content</p>;
     }
     
+    // Check if content contains purchase form
+    if (content.includes('purchase-form-container')) {
+      return (
+        <div 
+          className="purchase-form-wrapper"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      );
+    }
+
+    // Check if AI wants to show purchase form (detect keywords)
+    if (content.toLowerCase().includes('proceed with the purchase') || 
+        content.toLowerCase().includes('complete your order') ||
+        content.toLowerCase().includes('purchase form') ||
+        content.toLowerCase().includes('payment form')) {
+      return (
+        <div className="space-y-4">
+          <p className="whitespace-pre-wrap">{content}</p>
+          <div className="mt-4">
+            <button
+              onClick={handleShowPurchaseForm}
+              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
+            >
+              Show Payment Form
+            </button>
+          </div>
+        </div>
+      );
+    }
+    
     // Check if content contains table-like structure
     if (content.includes('|') && content.includes('-')) {
       const lines = content.split('\n');
@@ -145,6 +179,166 @@ const ChatBot = ({ productId, productName, productCategory }) => {
     
     // Regular text content
     return <p className="whitespace-pre-wrap">{content}</p>;
+  };
+
+  // Handle purchase completion
+  const handlePurchaseComplete = (purchaseResult) => {
+    console.log('Purchase completed:', purchaseResult);
+    setPurchaseData(purchaseResult);
+  };
+
+  // Handle purchase error
+  const handlePurchaseError = (error) => {
+    console.error('Purchase error:', error);
+    setError(`Purchase failed: ${error}`);
+  };
+
+  // Show purchase form
+  const handleShowPurchaseForm = () => {
+    // Get current product context
+    const productContext = getCurrentProductContext();
+    
+    // Try to extract product info from the conversation context
+    let productInfo = null;
+    
+    // Look for product info in the last few messages
+    const recentMessages = messages.slice(-5); // Check last 5 messages
+    for (let i = recentMessages.length - 1; i >= 0; i--) {
+      const message = recentMessages[i];
+      if (message.type === 'assistant' && message.message) {
+        // Look for total price patterns first (for PC builds)
+        const totalPriceMatch = message.message.match(/Total[^:]*:?\s*(\d+\.?\d*)\s*(JOD|JD|\$|USD)/i);
+        if (totalPriceMatch) {
+          const totalPrice = parseFloat(totalPriceMatch[1]);
+          
+          // Check if this is a PC build (multiple components listed with different names)
+          const bulletPoints = message.message.split('\n').filter(line => line.includes('•'));
+          const hasMultipleDifferentComponents = bulletPoints.length > 1 && 
+            bulletPoints.some(line => line.includes('CPU')) && 
+            bulletPoints.some(line => line.includes('GPU'));
+          
+          if (hasMultipleDifferentComponents) {
+            // This is a PC build
+            productInfo = {
+              id: productContext?.productId || `PC-BUILD-${Date.now()}`,
+              name: 'PC Build',
+              price: totalPrice,
+              quantity: 1,
+              category: 'PC Build',
+              isPCBuild: true
+            };
+          } else {
+            // Single product - look for the product name before the total
+            const singleProductMatch = message.message.match(/([^•\n]+?):\s*(\d+\.?\d*)\s*(JOD|JD|\$|USD)/i);
+            if (singleProductMatch) {
+              productInfo = {
+                id: productContext?.productId || `PROD-${Date.now()}`,
+                name: singleProductMatch[1].trim(),
+                price: totalPrice,
+                quantity: 1,
+                category: productContext?.productCategory || 'Hardware'
+              };
+            } else {
+              // Fallback: extract from the line before "Total"
+              const lines = message.message.split('\n');
+              const totalLineIndex = lines.findIndex(line => line.includes('Total'));
+              if (totalLineIndex > 0) {
+                const productLine = lines[totalLineIndex - 1].trim();
+                if (productLine.includes('•')) {
+                  const productName = productLine.replace('•', '').split(':')[0].trim();
+                  productInfo = {
+                    id: productContext?.productId || `PROD-${Date.now()}`,
+                    name: productName,
+                    price: totalPrice,
+                    quantity: 1,
+                    category: productContext?.productCategory || 'Hardware'
+                  };
+                }
+              }
+            }
+          }
+          break;
+        }
+        
+        // Fallback: Look for single price patterns
+        const priceMatch = message.message.match(/(\d+\.?\d*)\s*(JOD|JD|\$|USD)/i);
+        if (priceMatch) {
+          const price = parseFloat(priceMatch[1]);
+          
+          // Look for product name patterns - improved extraction
+          const productNameMatch = message.message.match(/([^•\n]+?):\s*(\d+\.?\d*)\s*(JOD|JD|\$|USD)/i);
+          let productName = 'Product';
+          
+          if (productNameMatch) {
+            productName = productNameMatch[1].trim();
+          } else {
+            // Look for product name before the price with better pattern
+            const beforePrice = message.message.substring(0, message.message.indexOf(priceMatch[0]));
+            const lines = beforePrice.split('\n');
+            const lastLine = lines[lines.length - 1].trim();
+            
+            if (lastLine && !lastLine.includes('Total') && !lastLine.includes('•')) {
+              productName = lastLine;
+            } else {
+              // Fallback: look for any product name before the price
+              const words = beforePrice.split(/\s+/).slice(-3); // Get last 3 words before price
+              if (words.length > 0) {
+                productName = words.join(' ');
+              }
+            }
+          }
+          
+          productInfo = {
+            id: productContext?.productId || `PROD-${Date.now()}`,
+            name: productName,
+            price: price,
+            quantity: 1,
+            category: productContext?.productCategory || 'Hardware'
+          };
+          break;
+        }
+      }
+    }
+    
+    // If no product info found in conversation, use context or defaults
+    if (!productInfo) {
+      productInfo = {
+        id: productContext?.productId || `PROD-${Date.now()}`,
+        name: productContext?.productName || 'Selected Product',
+        price: 0, // Will be filled by user or default
+        quantity: 1,
+        category: productContext?.productCategory || 'Hardware'
+      };
+    }
+    
+            console.log('Extracted product info:', productInfo);
+            setCurrentProduct(productInfo);
+            setShowPurchaseForm(true);
+  };
+
+  // Handle purchase form submission
+  const handlePurchaseFormSubmit = (formData) => {
+    // Simulate payment processing
+    const orderId = `ORD_${Date.now()}_${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+    
+    // Store order data
+    const orderData = {
+      orderId,
+      status: 'confirmed',
+      totalPrice: currentProduct.price,
+      products: [currentProduct],
+      paymentInfo: {
+        cardType: formData.cardType,
+        last4: formData.cardNumber.slice(-4)
+      },
+      createdAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem(`order_${orderId}`, JSON.stringify(orderData));
+    
+    // Close form and redirect
+    setShowPurchaseForm(false);
+    window.location.href = `/order-confirmation/${orderId}`;
   };
 
   if (!isOpen) {
@@ -195,6 +389,181 @@ const ChatBot = ({ productId, productName, productCategory }) => {
           </button>
         </div>
       </div>
+
+      {/* Purchase Handler */}
+      <PurchaseHandler 
+        onPurchaseComplete={handlePurchaseComplete}
+        onPurchaseError={handlePurchaseError}
+      />
+
+      {/* Purchase Form Modal */}
+      {showPurchaseForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Complete Your Purchase</h3>
+                <button
+                  onClick={() => setShowPurchaseForm(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Order Summary */}
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <h4 className="font-semibold text-gray-900 mb-2">Order Summary</h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-sm text-gray-600">{currentProduct?.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {currentProduct?.isPCBuild ? 'Complete PC Build' : `Quantity: ${currentProduct?.quantity}`}
+                      </p>
+                      {currentProduct?.isPCBuild && (
+                        <p className="text-xs text-blue-600 mt-1">✨ Includes all components with individual pricing</p>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      {currentProduct?.price > 0 ? (
+                        <div>
+                          <p className="font-semibold text-purple-600 text-lg">{currentProduct?.price?.toFixed(2)} JOD</p>
+                          {currentProduct?.isPCBuild && (
+                            <p className="text-xs text-gray-500">Total Build Price</p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="number"
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0"
+                            className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
+                            onChange={(e) => {
+                              const newPrice = parseFloat(e.target.value) || 0;
+                              setCurrentProduct(prev => ({ ...prev, price: newPrice }));
+                            }}
+                          />
+                          <span className="text-sm text-gray-600">JOD</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {currentProduct?.price === 0 && (
+                    <p className="text-xs text-blue-600">Please enter the product price above</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Payment Form */}
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                
+                // Validate price is entered
+                if (currentProduct?.price <= 0) {
+                  alert('Please enter a valid product price before proceeding with payment.');
+                  return;
+                }
+                
+                const formData = new FormData(e.target);
+                handlePurchaseFormSubmit({
+                  cardNumber: formData.get('cardNumber'),
+                  expiryDate: formData.get('expiryDate'),
+                  cvv: formData.get('cvv'),
+                  cardholderName: formData.get('cardholderName'),
+                  email: formData.get('email'),
+                  cardType: formData.get('cardNumber')?.startsWith('4') ? 'Visa' : 'Mastercard'
+                });
+              }}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                    <input
+                      type="text"
+                      name="cardNumber"
+                      placeholder="1234 5678 9012 3456"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                      <input
+                        type="text"
+                        name="expiryDate"
+                        placeholder="MM/YY"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                      <input
+                        type="text"
+                        name="cvv"
+                        placeholder="123"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+                    <input
+                      type="text"
+                      name="cardholderName"
+                      placeholder="John Doe"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="john@example.com"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <button
+                    type="submit"
+                    disabled={currentProduct?.price <= 0}
+                    className={`w-full py-3 px-4 rounded-md font-semibold transition-all duration-200 ${
+                      currentProduct?.price > 0
+                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    {currentProduct?.price > 0 
+                      ? `Complete Purchase - ${currentProduct?.price?.toFixed(2)} JOD`
+                      : 'Enter Product Price First'
+                    }
+                  </button>
+                </div>
+
+                <div className="mt-4 p-3 bg-blue-50 rounded-md">
+                  <p className="text-xs text-blue-700">
+                    <strong>🔒 Demo Mode:</strong> This is a demonstration. No real payment will be processed.
+                  </p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-purple-50 to-indigo-50">
