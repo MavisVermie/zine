@@ -63,11 +63,11 @@ const ProductCard = ({ product }) => {
     <Link to={getProductLink(product.id)} className="block">
       <div className="card p-4 h-full hover:shadow-lg transition-all duration-200 group">
         {/* Product Image */}
-        <div className="relative mb-4 overflow-hidden rounded-lg bg-gray-100">
+        <div className="relative mb-4 overflow-hidden rounded-lg bg-gray-100 p-2">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
+            className="w-full h-48 object-contain group-hover:scale-105 transition-transform duration-200"
             onError={(e) => {
               e.target.src = 'https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=No+Image';
             }}

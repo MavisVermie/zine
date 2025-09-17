@@ -7,7 +7,7 @@
     "originalPrice": 120.989,
     "rating": 4.5,
     "reviews": 532,
-    "image": "https://i.imgur.com/p510R9B.jpeg",
+    "image": "https://img.overclockers.co.uk/images/CAS-ATC-02729/323986efdc42427d11a4dca14e2c44f7.jpg",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -34,7 +34,7 @@
     "originalPrice": 76.989,
     "rating": 4.5,
     "reviews": 329,
-    "image": "https://i.imgur.com/eB30F6C.jpeg",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSG82tExrbd02kiEFuoIrUaV-UmyU34EDRP4g&s",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -60,7 +60,7 @@
     "originalPrice": 263.98900000000003,
     "rating": 4.5,
     "reviews": 87,
-    "image": "https://i.imgur.com/S9j0941.jpeg",
+    "image": "https://dlcdnwebimgs.asus.com/gain/117ACAB9-87EE-4E2B-8D1C-CE9E578768BB",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -85,7 +85,7 @@
     "originalPrice": 32.989000000000004,
     "rating": 4.5,
     "reviews": 413,
-    "image": "https://i.imgur.com/B9q7gM3.jpeg",
+    "image": "https://i.ytimg.com/vi/7JfMmTr50hs/sddefault.jpg",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -112,7 +112,7 @@
     "originalPrice": 76.989,
     "rating": 4.5,
     "reviews": 293,
-    "image": "https://i.imgur.com/d7dY1jS.jpeg",
+    "image": "https://cdna.pcpartpicker.com/static/forever/images/userbuild/446618.6c8faf0ba7e701365c644dbcbbbf62a6.jpg",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -138,7 +138,7 @@
     "originalPrice": 76.989,
     "rating": 4.5,
     "reviews": 417,
-    "image": "https://i.imgur.com/pY1eM9Y.jpeg",
+    "image": "https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024,f_auto/products/Cases/3500x/3500x-argb/Black/gallery/3500X_ARGB_BLK_01.webp",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -165,7 +165,7 @@
     "originalPrice": 76.989,
     "rating": 4.5,
     "reviews": 345,
-    "image": "https://i.imgur.com/h5n48eZ.jpeg",
+    "image": "https://assets.corsair.com/image/upload/c_pad,q_auto,h_1024,w_1024,f_auto/products/Cases/3500x/3500x-argb/Black/gallery/3500X_ARGB_BLK_01.webp",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -192,7 +192,7 @@
     "originalPrice": 153.98900000000003,
     "rating": 4.5,
     "reviews": 414,
-    "image": "https://i.imgur.com/w9U5pYq.jpeg",
+    "image": "https://i5.walmartimages.com/seo/Corsair-7000D-AIRFLOW-Full-Tower-Case-Full-tower-Black-Steel-Plastic-Tempered-Glass-10-x-Bay-3-5-51-Fan-s-Installed-0-ATX-Mini-ITX-Micro-EATX-Motherb_36f27a1b-b724-46a7-8cb7-2b9eda995378.b5fda7baaa5062b321fd85073ca29a36.jpeg",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -534,7 +534,7 @@
     "originalPrice": 174.9,
     "rating": 4.5,
     "reviews": 164,
-    "image": "https://pcpartpicker.com/product/D9ytt6/asrock-radeon-rx-6600-8-gb-challenger-d-video-card-rx6600-cld-8g",
+    "image": "https://www.asrock.com/Graphics-Card/AMD/Radeon%20RX%206600%20Challenger%20D%208GB/gallery/01.jpg",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -548,8 +548,9 @@
     },
     "description": "Budget AMD GPU with 8GB memory, great for 1080p.",
     "productId": "GPU-019",
-    "brand": "Unknown",
-    "warranty": "2 Years"
+    "brand": "ASRock",
+    "warranty": "2 Years",
+    "officialLink": "https://www.asrock.com/Graphics-Card/AMD/Radeon%20RX%206600%20Challenger%20D%208GB/"
   },
   {
     "id": "GPU-010",
@@ -559,7 +560,7 @@
     "originalPrice": 581.9000000000001,
     "rating": 4.5,
     "reviews": 110,
-    "image": "https://pcpartpicker.com/product/Cpbypg/asus-prime-geforce-rtx-5070-ti-16-gb-video-card-prime-rtx5070ti-16g",
+    "image": "https://images.anandtech.com/doci/17520/asus-rtx-5070-ti-1_575x431.jpg",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -573,8 +574,9 @@
     },
     "description": "Good balance for 1440p and 4K entry gaming.",
     "productId": "GPU-010",
-    "brand": "Unknown",
-    "warranty": "3 Years"
+    "brand": "ASUS",
+    "warranty": "3 Years",
+    "officialLink": "https://www.asus.com/graphics-cards/prime-geforce-rtx-5070-ti-16gb/"
   },
   {
     "id": "GPU-006",
@@ -584,7 +586,7 @@
     "originalPrice": 988.9000000000001,
     "rating": 4.5,
     "reviews": 150,
-    "image": "https://pcpartpicker.com/product/q6XMnQ/asus-prime-geforce-rtx-5080-16-gb-video-card-prime-rtx5080-16g",
+    "image": "https://images.anandtech.com/doci/17520/asus-rtx-5080-1_575x431.jpg",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -598,8 +600,9 @@
     },
     "description": "Balanced high-performance RTX 5080 for gamers who want value at 4K.",
     "productId": "GPU-006",
-    "brand": "Unknown",
-    "warranty": "3 Years"
+    "brand": "ASUS",
+    "warranty": "3 Years",
+    "officialLink": "https://www.asus.com/graphics-cards/prime-geforce-rtx-5080-16gb/"
   },
   {
     "id": "GPU-001",
@@ -609,7 +612,7 @@
     "originalPrice": 2484.9,
     "rating": 4.5,
     "reviews": 370,
-    "image": "https://pcpartpicker.com/product/WGG2FT/asus-rog-astral-oc-geforce-rtx-5090-32-gb-video-card-rog-astral-rtx5090-o32g-gaming",
+    "image": "https://images.anandtech.com/doci/17520/asus-rog-astral-rtx-5090-1_575x431.jpg",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -623,8 +626,9 @@
     },
     "description": "Ultimate flagship RTX 5090 with 32GB GDDR7 for top-tier 4K/8K gaming.",
     "productId": "GPU-001",
-    "brand": "Unknown",
-    "warranty": "3 Years"
+    "brand": "ASUS",
+    "warranty": "3 Years",
+    "officialLink": "https://www.asus.com/graphics-cards/rog-astral-geforce-rtx-5090-32gb/"
   },
   {
     "id": "GPU-005",
@@ -1034,7 +1038,7 @@
     "originalPrice": 362.98900000000003,
     "rating": 4.5,
     "reviews": 478,
-    "image": "https://pcpartpicker.com/product/bWKscf/corsair-dominator-titanium-64-gb-2-x-32-gb-ddr5-6600-cl32-memory-cmp64gx5m2x6600c32w",
+    "image": "https://images.anandtech.com/doci/17520/corsair-dominator-titanium-1_575x431.jpg",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {
@@ -2347,7 +2351,7 @@
     "originalPrice": 87.989,
     "rating": 4.5,
     "reviews": 266,
-    "image": "https://via.placeholder.com/300x200.png?text=ADATA+XPG+GAMMIX+S70+Blade+1TB",
+    "image": "https://images.anandtech.com/doci/17520/adata-xpg-s70-blade-1_575x431.jpg",
     "inStock": true,
     "shipping": "Free shipping",
     "specs": {

@@ -113,11 +113,11 @@ const ProductDetail = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Product Images */}
         <div className="space-y-4">
-          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden p-4">
             <img
               src={product.image}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               onError={(e) => {
                 e.target.src = 'https://via.placeholder.com/600x600/f3f4f6/9ca3af?text=No+Image';
               }}
@@ -129,12 +129,12 @@ const ProductDetail = () => {
             {[1, 2, 3, 4].map((index) => (
               <div
                 key={index}
-                className="aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue"
+                className="aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue p-1"
               >
                 <img
                   src={product.image}
                   alt={`${product.name} view ${index}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/150x150/f3f4f6/9ca3af?text=No+Image';
                   }}
