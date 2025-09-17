@@ -19,14 +19,29 @@ class FlowiseApiService {
    */
   async sendMessage(message, productId = null, productName = null, productCategory = null) {
     try {
+      // Add user message to history before making API call
+      this.addUserMessageToHistory(message);
+
+      const history = this.getChatHistory();
+
       // Add product context to the message if provided
       let contextualMessage = message;
       if (productId) {
         contextualMessage = `The user is viewing product ${productId}${productName ? ` (${productName})` : ''}${productCategory ? ` in the ${productCategory} category` : ''}. ${message}`;
       }
 
-      const history = this.getChatHistory();
+      // Add conversation history context to the message since Flowise doesn't use the history parameter properly
+      if (history.length > 0) {
+        const historyContext = history.map(msg => `${msg.role === 'userMessage' ? 'User' : 'Assistant'}: ${msg.content}`).join('\n');
+        contextualMessage = `Previous conversation:\n${historyContext}\n\nCurrent question: ${contextualMessage}`;
+      }
       console.log('Sending history to API:', history);
+      console.log('History length:', history.length);
+      console.log('Contextual message:', contextualMessage);
+      console.log('Full request body:', JSON.stringify({
+        question: contextualMessage,
+        history: history,
+      }, null, 2));
       
       const response = await fetch(`${this.apiUrl}/api/v1/prediction/${CHATFLOW_ID}`, {
         method: 'POST',
@@ -64,8 +79,8 @@ class FlowiseApiService {
         throw error;
       }
       
-      // Save the conversation to history
-      this.saveToHistory(message, data.answer || data.text || data.response);
+      // Save the AI response to history
+      this.saveResponseToHistory(data.answer || data.text || data.response);
       
       return data;
     } catch (error) {
@@ -84,7 +99,7 @@ class FlowiseApiService {
       if (!history) return [];
       
       const parsedHistory = JSON.parse(history);
-      // Convert to Flowise format: { role: "apiMessage" | "userMessage", content: string }
+      // Convert to Flowise format: { role: "userMessage" | "apiMessage", content: string }
       return parsedHistory.map(msg => ({
         role: msg.type === 'user' ? 'userMessage' : 'apiMessage',
         content: msg.message
@@ -113,21 +128,38 @@ class FlowiseApiService {
   }
 
   /**
-   * Save message and response to chat history
+   * Add user message to history before API call
    * @param {string} message - User message
-   * @param {string} response - AI response
    */
-  saveToHistory(message, response) {
+  addUserMessageToHistory(message) {
     try {
-      // Get the raw history from localStorage (not the converted format)
       const rawHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+      console.log('Before adding user message, history length:', rawHistory.length);
       
-      // Add new messages in our internal format
+      // Add user message to history
       rawHistory.push({
         type: 'user',
         message: message,
         timestamp: new Date().toISOString()
       });
+
+      console.log('After adding user message, history length:', rawHistory.length);
+      localStorage.setItem('chatHistory', JSON.stringify(rawHistory));
+    } catch (error) {
+      console.error('Error adding user message to history:', error);
+    }
+  }
+
+  /**
+   * Save AI response to chat history
+   * @param {string} response - AI response
+   */
+  saveResponseToHistory(response) {
+    try {
+      // Get the raw history from localStorage (not the converted format)
+      const rawHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+      
+      // Add only the AI response (user message already added in addUserMessageToHistory)
       rawHistory.push({
         type: 'assistant',
         message: response,
@@ -141,7 +173,7 @@ class FlowiseApiService {
 
       localStorage.setItem('chatHistory', JSON.stringify(rawHistory));
     } catch (error) {
-      console.error('Error saving to chat history:', error);
+      console.error('Error saving response to chat history:', error);
     }
   }
 

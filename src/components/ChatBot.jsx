@@ -64,19 +64,11 @@ const ChatBot = ({ productId, productName, productCategory }) => {
     setIsLoading(true);
     setError('');
 
-    // Add user message to UI immediately
-    const newUserMessage = {
-      type: 'user',
-      message: userMessage,
-      timestamp: new Date().toISOString()
-    };
-    setMessages(prev => [...prev, newUserMessage]);
-
     try {
       // Get current product context
       const productContext = getCurrentProductContext();
       
-      // Send message to Flowise API
+      // Send message to Flowise API (this will handle adding user message to history)
       const response = await flowiseApi.sendMessage(
         userMessage,
         productContext?.productId,
@@ -84,22 +76,15 @@ const ChatBot = ({ productId, productName, productCategory }) => {
         productContext?.productCategory
       );
 
-      // Add AI response to UI
-      const aiResponse = {
-        type: 'assistant',
-        message: response.answer || response.text || response.response || 'Sorry, I could not generate a response.',
-        timestamp: new Date().toISOString()
-      };
-      setMessages(prev => [...prev, aiResponse]);
+      // Reload messages from localStorage to get the complete conversation
+      const updatedHistory = flowiseApi.getDisplayHistory();
+      setMessages(updatedHistory);
 
     } catch (err) {
       setError(err.message);
-      const errorMessage = {
-        type: 'assistant',
-        message: 'Sorry, I encountered an error. Please check your API configuration and try again.',
-        timestamp: new Date().toISOString()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      // Reload messages from localStorage to get the complete conversation
+      const updatedHistory = flowiseApi.getDisplayHistory();
+      setMessages(updatedHistory);
     } finally {
       setIsLoading(false);
     }
