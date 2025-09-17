@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import productsData from '../data/products.json';
+import ChatBot from '../components/ChatBot';
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -168,6 +169,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+      
+      {/* Chat Bot */}
+      <ChatBot />
     </div>
   );
 };

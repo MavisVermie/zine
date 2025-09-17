@@ -314,7 +314,11 @@ const ProductDetail = () => {
       </div>
       
       {/* Chat Bot */}
-      <ChatBot />
+      <ChatBot 
+        productId={product.id}
+        productName={product.name}
+        productCategory={product.category}
+      />
     </div>
   );
 };

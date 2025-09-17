@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import flowiseApi from '../services/flowiseApi';
 
-const ChatBot = () => {
+const ChatBot = ({ productId, productName, productCategory }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -11,14 +11,24 @@ const ChatBot = () => {
   const messagesEndRef = useRef(null);
   const location = useLocation();
 
-  // Get current product context from URL
+  // Get current product context from props or URL
   const getCurrentProductContext = () => {
+    // If props are provided, use them
+    if (productId) {
+      return {
+        productId,
+        productName,
+        productCategory
+      };
+    }
+    
+    // Fallback to URL parsing for other pages
     const path = location.pathname;
     const productMatch = path.match(/\/product\/(.+)/);
     if (productMatch) {
       return {
         productId: productMatch[1],
-        productName: null, // Will be filled when we have product data
+        productName: null,
         productCategory: null
       };
     }

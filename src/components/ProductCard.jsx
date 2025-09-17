@@ -56,10 +56,6 @@ const ProductCard = ({ product }) => {
   };
 
   const getProductLink = (productId) => {
-    if (productId.startsWith('CPU-')) {
-      const id = productId.replace('CPU-', '');
-      return `/CPU-${id}`;
-    }
     return `/product/${productId}`;
   };
 

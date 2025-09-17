@@ -23,7 +23,6 @@ function App() {
             <Route path="/search" element={<Search />} />
           </Routes>
         </main>
-        <ChatBot />
       </div>
     </Router>
   );
