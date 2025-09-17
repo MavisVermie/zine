@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Oswald:wght@700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,23 +7,277 @@
 @layer base {
   body {
     @apply bg-white text-gray-900;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 700;
+  }
+  
+  .title {
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #303841;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    position: relative;
+  }
+  
+  .title::after {
+    content: '';
+    display: block;
+    position: relative;
+    margin-top: 8px;
+    width: 50px;
+    height: 1px;
+    background: #DA0A22;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-blue text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200;
+    @apply text-white px-6 py-3 rounded-sm font-semibold text-sm uppercase transition-colors duration-200;
+    background: #303841;
+    font-family: 'Ubuntu', sans-serif;
+  }
+  
+  .btn-primary:hover {
+    background: #DA0A22 !important;
+    color: #ffffff !important;
   }
   
   .btn-secondary {
-    @apply bg-fuchsia text-white px-6 py-2 rounded-md hover:bg-fuchsia-700 transition-colors duration-200;
+    @apply text-white px-6 py-3 rounded-sm font-semibold text-sm uppercase transition-colors duration-200;
+    background: #DA0A22;
+    font-family: 'Ubuntu', sans-serif;
+  }
+  
+  .btn-secondary:hover {
+    background: #6D767D !important;
+    color: #ffffff !important;
   }
   
   .card {
-    @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+    @apply bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-lg transition-all duration-200;
+    border-color: #DDDDDD;
   }
   
   .input-field {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue focus:border-transparent;
+    @apply w-full px-4 py-3 rounded-sm focus:outline-none transition-colors duration-200;
+    background: #F5F5F5 !important;
+    border: 1px solid #DDDDDD !important;
+    font-family: 'Ubuntu', sans-serif;
+  }
+  
+  .input-field:hover {
+    border-color: #C4CAFD !important;
+  }
+  
+  .input-field:focus {
+    border-color: #C4CAFD !important;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+  }
+  
+  .product-card {
+    @apply bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-lg transition-all duration-200;
+    border-color: #DDDDDD;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .price-tag {
+    color: #303841;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  
+  .sale-badge {
+    background: #DA0A22;
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 5px 7px;
+    font-size: 12px;
+  }
+  
+  .rating-stars {
+    color: #FFD700;
+  }
+  
+  .section-title {
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: #303841;
+    text-align: center;
+    background: #EEEEEE;
+    padding: 20px 0;
+    margin: 0;
+    position: relative;
+  }
+  
+  .section-title::after {
+    content: '';
+    display: block;
+    position: relative;
+    margin-top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 1px;
+    background: #DA0A22;
+  }
+
+  /* Product Card Styles */
+  .product-layout {
+    @apply bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-lg transition-all duration-200;
+    border-color: #DDDDDD;
+  }
+
+  .product-thumb {
+    @apply relative;
+  }
+
+  .product-thumb:hover {
+    transform: translateY(-2px);
+  }
+
+  .product-img {
+    @apply relative overflow-hidden;
+  }
+
+  .img-first {
+    @apply transition-transform duration-200;
+  }
+
+  .product-thumb:hover .img-first {
+    transform: scale(1.05);
+  }
+
+  .img-second {
+    @apply transition-opacity duration-200;
+  }
+
+  .product-labels {
+    @apply absolute top-2 left-2 z-10;
+  }
+
+  .product-label {
+    @apply text-xs font-bold text-white px-2 py-1 rounded-sm mb-1 block;
+    background: #DA0A22;
+  }
+
+  .product-label-diagonal {
+    @apply relative;
+    transform: rotate(-45deg);
+    transform-origin: center;
+  }
+
+  .product-label-diagonal::before {
+    content: '';
+    @apply absolute inset-0 bg-red-600;
+    transform: rotate(45deg);
+    z-index: -1;
+  }
+
+  .stats {
+    @apply text-xs text-gray-600;
+  }
+
+  .stats-label {
+    @apply font-medium;
+  }
+
+  .price-new {
+    @apply text-lg font-bold text-gray-900;
+  }
+
+  .price-old {
+    @apply text-sm text-gray-500 line-through;
+  }
+
+  .price-tax {
+    @apply text-xs text-gray-600;
+  }
+
+  .rating-stars {
+    @apply flex items-center;
+  }
+
+  .stepper {
+    @apply flex items-center border border-gray-300 rounded-sm;
+    border-color: #303841;
+  }
+
+  .stepper input {
+    @apply w-12 h-8 text-center border-0 focus:outline-none;
+    background: transparent;
+  }
+
+  .stepper button {
+    @apply w-4 h-4 flex items-center justify-center hover:bg-gray-100;
+  }
+
+  .btn-quickview {
+    @apply text-xs px-2 py-1 bg-white text-gray-700 hover:bg-red-600 hover:text-white transition-colors;
+  }
+
+  .btn-wishlist,
+  .btn-compare {
+    @apply text-xs px-2 py-1 bg-gray-100 text-gray-700 hover:bg-red-600 hover:text-white transition-colors;
+  }
+
+  .btn-extra {
+    @apply text-xs px-2 py-1 transition-colors;
+  }
+
+  .btn-extra-46 {
+    @apply bg-red-600 text-white hover:bg-red-700;
+  }
+
+  .btn-extra-93 {
+    @apply bg-gray-100 text-gray-700 hover:bg-red-600 hover:text-white;
+  }
+
+  .buttons-wrapper {
+    @apply space-y-2;
+  }
+
+  .button-group {
+    @apply space-y-2;
+  }
+
+  .cart-group {
+    @apply flex items-center space-x-2;
+  }
+
+  .wish-group {
+    @apply flex space-x-1;
+  }
+
+  .extra-group {
+    @apply flex space-x-1;
+  }
+
+  /* Font Awesome Icons */
+  .fa {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+  }
+
+  .fa-angle-up::before {
+    content: "\f106";
+  }
+
+  .fa-angle-down::before {
+    content: "\f107";
   }
 }

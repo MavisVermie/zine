@@ -38,8 +38,8 @@ const Header = () => {
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
       {/* Top Bar */}
-      <div className="bg-blue text-white py-2">
-        <div className="container mx-auto px-4">
+      <div className="bg-gray-800 text-white py-2" style={{height: '35px'}}>
+        <div className="container mx-auto px-4" style={{maxWidth: '1400px'}}>
           <div className="flex justify-between items-center text-sm">
             <div className="flex space-x-4">
               <span>Free shipping on orders over $99</span>
@@ -55,14 +55,26 @@ const Header = () => {
       </div>
 
       {/* Main Header */}
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-4" style={{maxWidth: '1400px'}}>
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue to-fuchsia rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">Z</span>
+          <Link to="/" className="flex items-center space-x-3">
+            <img 
+              src="https://numberonestore.net/image/cache/catalog/number-one-store-200x200.png" 
+              alt="Number One Store" 
+              className="h-12 w-auto"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+            <div className="w-12 h-12 bg-gradient-to-r from-gray-800 to-red-600 rounded-sm flex items-center justify-center" style={{display: 'none'}}>
+              <span className="text-white font-bold text-xl">N</span>
             </div>
-            <span className="text-2xl font-bold text-gray-900">Zinc Hardware</span>
+            <div className="flex flex-col">
+              <span className="text-2xl font-bold text-gray-900" style={{fontFamily: 'Oswald, sans-serif'}}>NUMBER ONE STORE</span>
+              <span className="text-sm text-gray-600">Computer Hardware & Gaming</span>
+            </div>
           </Link>
 
           {/* Search Bar */}
@@ -73,11 +85,12 @@ const Header = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for products..."
-                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue focus:border-transparent"
+                className="input-field w-full pr-12"
+                style={{height: '45px'}}
               />
               <button
                 type="submit"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-600"
               >
                 <MagnifyingGlassIcon className="w-6 h-6" />
               </button>
@@ -88,11 +101,11 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             <Link
               to="/cart"
-              className="relative p-2 text-gray-700 hover:text-blue transition-colors"
+              className="relative p-2 text-gray-700 hover:text-red-600 transition-colors"
             >
               <ShoppingCartIcon className="w-6 h-6" />
               {getCartItemCount() > 0 && (
-                <span className="absolute -top-1 -right-1 bg-fuchsia text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {getCartItemCount()}
                 </span>
               )}
@@ -101,7 +114,7 @@ const Header = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-gray-700 hover:text-blue"
+              className="md:hidden p-2 text-gray-700 hover:text-red-600"
             >
               <Bars3Icon className="w-6 h-6" />
             </button>
@@ -116,7 +129,7 @@ const Header = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for products..."
-              className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue"
+              className="input-field w-full pr-10"
             />
             <button
               type="submit"
@@ -129,14 +142,15 @@ const Header = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="bg-gray-100 border-t">
-        <div className="container mx-auto px-4">
+      <nav className="bg-gray-100 border-t border-gray-200">
+        <div className="container mx-auto px-4" style={{maxWidth: '1400px'}}>
           <div className="hidden md:flex space-x-8 py-3">
             {categories.map((category) => (
               <Link
                 key={category}
                 to={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}
-                className="text-gray-700 hover:text-blue font-medium transition-colors"
+                className="text-gray-700 hover:text-red-600 font-medium transition-colors text-sm uppercase"
+                style={{fontSize: '13px'}}
               >
                 {category}
               </Link>
@@ -145,13 +159,13 @@ const Header = () => {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden py-4 border-t">
+            <div className="md:hidden py-4 border-t border-gray-200">
               <div className="grid grid-cols-2 gap-2">
                 {categories.map((category) => (
                   <Link
                     key={category}
                     to={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="text-gray-700 hover:text-blue font-medium py-2 transition-colors"
+                    className="text-gray-700 hover:text-red-600 font-medium py-2 transition-colors text-sm uppercase"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {category}

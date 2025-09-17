@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { StarIcon, ShoppingCartIcon, StarOutlineIcon } from './Icons';
 
 const ProductCard = ({ product }) => {
+  const [quantity, setQuantity] = useState(1);
+
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -10,15 +13,51 @@ const ProductCard = ({ product }) => {
     const existingItem = cart.find(item => item.id === product.id);
     
     if (existingItem) {
-      existingItem.quantity += 1;
+      existingItem.quantity += quantity;
     } else {
-      cart.push({ ...product, quantity: 1 });
+      cart.push({ ...product, quantity: quantity });
     }
     
     localStorage.setItem('cart', JSON.stringify(cart));
     
     // Trigger custom event to update cart count
     window.dispatchEvent(new Event('cartUpdated'));
+  };
+
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const existingItem = cart.find(item => item.id === product.id);
+    
+    if (existingItem) {
+      existingItem.quantity += quantity;
+    } else {
+      cart.push({ ...product, quantity: quantity });
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Redirect to cart
+    window.location.href = '/cart';
+  };
+
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value) || 1;
+    setQuantity(Math.max(1, value));
+  };
+
+  const incrementQuantity = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setQuantity(prev => prev + 1);
+  };
+
+  const decrementQuantity = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setQuantity(prev => Math.max(1, prev - 1));
   };
 
   const renderStars = (rating) => {
@@ -59,86 +98,176 @@ const ProductCard = ({ product }) => {
     return `/product/${productId}`;
   };
 
+  const getDiscountPercentage = () => {
+    if (product.originalPrice > product.price) {
+      return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+    }
+    return 0;
+  };
+
   return (
-    <Link to={getProductLink(product.id)} className="block">
-      <div className="card p-4 h-full hover:shadow-lg transition-all duration-200 group">
+    <div className="product-layout swiper-slide has-extra-button">
+      <div className="product-thumb">
         {/* Product Image */}
-        <div className="relative mb-4 overflow-hidden rounded-lg bg-gray-100 p-2">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-48 object-contain group-hover:scale-105 transition-transform duration-200"
-            onError={(e) => {
-              e.target.src = 'https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=No+Image';
-            }}
-          />
-          {product.originalPrice > product.price && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-              Save {formatPrice(product.originalPrice - product.price)}
+        <div className="image relative">
+          <div className="quickview-button absolute top-2 right-2 z-10">
+            <button className="btn btn-quickview text-xs px-2 py-1 bg-white text-gray-700 hover:bg-red-600 hover:text-white transition-colors">
+              <span className="btn-text">Quickview</span>
+            </button>
+          </div>
+          
+          <Link to={getProductLink(product.id)} className="product-img has-second-image block">
+            <div className="relative">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="img-responsive img-first w-full h-48 object-contain"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=No+Image';
+                }}
+              />
+              <img
+                src={product.image}
+                alt={product.name}
+                className="img-responsive img-second w-full h-48 object-contain absolute top-0 left-0 opacity-0 hover:opacity-100 transition-opacity"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=No+Image';
+                }}
+              />
             </div>
-          )}
-          {!product.inStock && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <span className="text-white font-semibold">Out of Stock</span>
-            </div>
-          )}
+          </Link>
+
+          {/* Product Labels */}
+          <div className="product-labels absolute top-2 left-2">
+            {getDiscountPercentage() > 0 && (
+              <span className="product-label product-label-233 product-label-default">
+                <b>-{getDiscountPercentage()}%</b>
+              </span>
+            )}
+            {!product.inStock && (
+              <span className="product-label product-label-30 product-label-diagonal">
+                <b>Out Of Stock</b>
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Product Info */}
-        <div className="flex-1">
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue transition-colors">
-            {product.name}
-          </h3>
-          
-          {/* Rating */}
-          <div className="flex items-center mb-2">
-            <div className="flex items-center mr-2">
-              {renderStars(product.rating)}
-            </div>
-            <span className="text-sm text-gray-600">
-              ({product.reviews})
+        {/* Product Caption */}
+        <div className="caption p-4">
+          {/* Stats */}
+          <div className="stats text-xs text-gray-600 mb-2">
+            <span className="stat-1 block">
+              <span className="stats-label font-medium">Brand:</span> 
+              <span className="ml-1">{product.brand || 'Unknown'}</span>
+            </span>
+            <span className="stat-2 block">
+              <span className="stats-label font-medium">Model:</span> 
+              <span className="ml-1">{product.model || 'N/A'}</span>
             </span>
           </div>
 
-          {/* Specs Preview */}
-          <div className="text-sm text-gray-600 mb-3 space-y-1">
-            {Object.entries(product.specs).slice(0, 2).map(([key, value]) => (
-              <div key={key} className="flex">
-                <span className="font-medium mr-2">{key}:</span>
-                <span>{value}</span>
-              </div>
-            ))}
+          {/* Product Name */}
+          <div className="name mb-2">
+            <Link 
+              to={getProductLink(product.id)}
+              className="text-sm font-bold text-gray-900 hover:text-red-600 transition-colors line-clamp-2"
+            >
+              {product.name}
+            </Link>
           </div>
 
           {/* Price */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="price mb-2">
             <div className="flex items-center space-x-2">
-              <span className="text-xl font-bold text-gray-900">
+              <span className="price-new text-lg font-bold text-gray-900">
                 {formatPrice(product.price)}
               </span>
               {product.originalPrice > product.price && (
-                <span className="text-sm text-gray-500 line-through">
+                <span className="price-old text-sm text-gray-500 line-through">
                   {formatPrice(product.originalPrice)}
                 </span>
               )}
             </div>
-            <span className="text-xs text-green-600 font-medium">
-              {product.shipping}
+            <span className="price-tax text-xs text-gray-600">
+              Ex Tax: {formatPrice(product.price)}
             </span>
           </div>
 
-          {/* Add to Cart Button */}
-          <button
-            onClick={handleAddToCart}
-            disabled={!product.inStock}
-            className="w-full bg-blue text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center space-x-2"
-          >
-            <ShoppingCartIcon className="w-4 h-4" />
-            <span>Add to Cart</span>
-          </button>
+          {/* Rating */}
+          <div className="rating mb-3">
+            <div className="rating-stars flex items-center">
+              {renderStars(product.rating)}
+              <span className="ml-2 text-xs text-gray-600">({product.reviews})</span>
+            </div>
+          </div>
+
+          {/* Buttons Wrapper */}
+          <div className="buttons-wrapper">
+            <div className="button-group">
+              <div className="cart-group flex items-center space-x-2 mb-2">
+                <div className="stepper flex items-center border border-gray-300 rounded-sm">
+                  <input
+                    type="text"
+                    name="quantity"
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                    className="form-control w-12 h-8 text-center border-0 focus:outline-none"
+                    style={{fontSize: '12px'}}
+                  />
+                  <input type="hidden" name="product_id" value={product.id} />
+                  <div className="flex flex-col">
+                    <button
+                      onClick={incrementQuantity}
+                      className="w-4 h-4 flex items-center justify-center hover:bg-gray-100"
+                      style={{fontSize: '10px'}}
+                    >
+                      <i className="fa fa-angle-up"></i>
+                    </button>
+                    <button
+                      onClick={decrementQuantity}
+                      className="w-4 h-4 flex items-center justify-center hover:bg-gray-100"
+                      style={{fontSize: '10px'}}
+                    >
+                      <i className="fa fa-angle-down"></i>
+                    </button>
+                  </div>
+                </div>
+                <button
+                  onClick={handleAddToCart}
+                  disabled={!product.inStock}
+                  className="btn btn-cart btn-primary text-xs px-3 py-1 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  <span className="btn-text">Add to Cart</span>
+                </button>
+              </div>
+              
+              <div className="wish-group flex space-x-1 mb-2">
+                <button className="btn btn-wishlist text-xs px-2 py-1 bg-gray-100 text-gray-700 hover:bg-red-600 hover:text-white transition-colors">
+                  <span className="btn-text">Wish List</span>
+                </button>
+                <button className="btn btn-compare text-xs px-2 py-1 bg-gray-100 text-gray-700 hover:bg-red-600 hover:text-white transition-colors">
+                  <span className="btn-text">Compare</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="extra-group">
+              <div className="flex space-x-1">
+                <button
+                  onClick={handleBuyNow}
+                  className="btn btn-extra btn-extra-46 text-xs px-2 py-1 bg-red-600 text-white hover:bg-red-700 transition-colors"
+                >
+                  <span className="btn-text">Buy Now</span>
+                </button>
+                <button className="btn btn-extra btn-extra-93 text-xs px-2 py-1 bg-gray-100 text-gray-700 hover:bg-red-600 hover:text-white transition-colors">
+                  <span className="btn-text">Ask Question</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 
